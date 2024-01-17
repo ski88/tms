@@ -1,0 +1,21 @@
+---
+- name: Upgrade all packages to the latest version without removing existing ones
+  apt:
+    update_cache: yes
+    upgrade: 'safe'
+    force_apt_get: yes
+  become: yes
+
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - sudo
+      - ufw
+    state: present
+
+- name: Add user to sudo group
+  user:
+    name: tms
+    groups: sudo
+    append: yes

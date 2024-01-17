@@ -1,0 +1,37 @@
+---
+- name: Remove existing SSH host keys
+  file:
+    path: /etc/ssh/ssh_host_*
+    state: absent
+
+- name: Re-generate RSA and ED25519 keys
+  shell: |
+    ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
+    ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
+
+- name: Remove small Diffie-Hellman moduli
+  shell: |
+    awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe
+    mv /etc/ssh/moduli.safe /etc/ssh/moduli
+
+- name: Restrict supported key exchange, cipher, and MAC algorithms
+  template:
+    src: ssh-audit_hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
+
+- name: Restart OpenSSH server
+  service:
+    name: ssh
+    state: restarted
+
+- name: Disable root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+
+- name: Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#PasswordAuthentication yes'
+    line: 'PasswordAuthentication no'

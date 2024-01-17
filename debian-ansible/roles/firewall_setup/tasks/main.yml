@@ -1,0 +1,13 @@
+---
+- name: Setup UFW Firewall for Webmin and SSH
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop:
+    - 10000
+    - 22
+    - 6556
+
+- name: Enable firewall
+  ufw:
+    state: enabled

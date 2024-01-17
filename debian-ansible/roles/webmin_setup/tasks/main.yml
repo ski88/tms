@@ -1,0 +1,13 @@
+---
+- name: Download and run setup-repos.sh script from webmin repository
+  get_url:
+    url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
+    dest: /tmp/setup-repos.sh
+    mode: '0755'
+  command: /tmp/setup-repos.sh --force
+
+- name: Install webmin package with recommended dependencies
+  apt:
+    name: webmin
+    state: present
+    install_recommends: yes

@@ -1,0 +1,10 @@
+---
+- name: Automate server setup and hardening
+  hosts: all
+  become: yes
+  roles:
+    - basic_setup
+    - webmin_setup
+    - firewall_setup
+    - fail2ban_setup
+    - ssh_hardening
